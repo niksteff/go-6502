@@ -12,7 +12,8 @@ func (m *Mem) init(capacity uint32) {
 
 func (m *Mem) Read(addr Word) Byte {
 	// TODO: create assert to be in memory bounds
-	return m.data[addr]
+	var d Byte = m.data[addr]
+	return d
 }
 
 func (m *Mem) Write(addr Word, b Byte) {

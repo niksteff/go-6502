@@ -13,14 +13,17 @@ func main() {
 	cpu.Reset(&mem)
 	
 	// write a little program in memory
-	mem.Write(0xFFFC, cpu6502.INS_JSR_ABS)
+	mem.Write(0xFFFC, cpu6502.INS_JSR)
 	mem.Write(0xFFFD, 0x0A)
 	mem.Write(0xFFFE, 0x0B)
-	
+	mem.Write(0xFFFF, cpu6502.INS_LDA_IM)
+	mem.Write(0x0, 0xA)
+
 	mem.Write(0x0B0A, cpu6502.INS_LDA_IM)
 	mem.Write(0x0B0B, 0x42)
+	mem.Write(0x0B0C, cpu6502.INS_RTS)
 	
-	cpu.Execute(&mem, 8)
+	cpu.Execute(&mem, 16)
 
 	log.Println("exiting ...")
 }

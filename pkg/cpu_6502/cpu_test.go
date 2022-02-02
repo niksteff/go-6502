@@ -21,7 +21,7 @@ func TestSetBit(t *testing.T) {
 	var want cpu6502.Byte = 0b_1000_0010
 
 	var sr cpu6502.Byte = 0b_0000_0000
-	sr.SetFlag(cpu6502.Z | cpu6502.N)
+	sr.SetBit(cpu6502.Z | cpu6502.N)
 
 	if want != sr {
 		t.Errorf("expected the result of the bitwise or connection to be %08b but got %08b", want, sr)
@@ -34,7 +34,7 @@ func TestUnsetBit(t *testing.T) {
 	var want cpu6502.Byte = 0b_0001_0000
 
 	var sr cpu6502.Byte = 0b_0001_0010
-	sr.UnsetFlag(cpu6502.Z)
+	sr.UnsetBit(cpu6502.Z)
 
 	if want != sr {
 		t.Errorf("expected the result of the bitwise or connection to be %08b but got %08b", want, sr)
@@ -49,7 +49,7 @@ func TestHasFlag(t *testing.T) {
 	var sr cpu6502.Byte = 0b_0000_0010
 
 	var isSet bool
-	if sr.HasFlag(cpu6502.Z) {
+	if sr.HasBit(cpu6502.Z) {
 		isSet = true
 	}
 
@@ -66,7 +66,7 @@ func TestNotHasFlag(t *testing.T) {
 	var sr cpu6502.Byte = 0b_0000_0000
 
 	var isSet bool
-	if sr.HasFlag(cpu6502.N) {
+	if sr.HasBit(cpu6502.N) {
 		isSet = true
 	}
 
