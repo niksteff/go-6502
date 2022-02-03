@@ -1,0 +1,59 @@
+package cpu6502
+
+// word represents an unsigned 16bit integer this is a convenience type that
+// enables us to write word instead of uint16
+type word uint16
+
+// Bus is an internal communication bus that connects all parts of the
+// microprocessor
+type Bus struct {
+	cpu CPU
+	mem RAM
+}
+
+// New returns a new instance of the microprocessors bus which can be used to
+// read and write from and to it
+func New() Bus {
+	var b Bus
+	b = Bus{
+		cpu: CPU{
+			Bus: &b,
+		},
+		mem: RAM{
+			Data: make([]byte, 1024*64),
+		},
+	}
+
+	b.reset()
+
+	return b
+}
+
+// reset the microprocessor
+func (b *Bus) reset() {
+	// create 64KiB of memory
+	b.mem.Data = make([]byte, 1024*64)
+	
+	// reset the cpu to read the first instruction
+	b.cpu.reset()
+
+	// TODO: call execute with the correct amount of instructions
+}
+
+// Execute the given number of cycles
+func (b *Bus) Execute(cyc uint32) {
+	b.cpu.execute(cyc)
+}
+
+// Read 1 byte from the given address on the bus
+func (b *Bus) Read(addr word) byte {
+	// TODO: create assert to be in memory bounds
+	var d byte = b.mem.Data[addr]
+	return d
+}
+
+// Write 1 byte to the bus at the given address
+func (b *Bus) Write(addr word, val byte) {
+	// TODO: create assert to be in memory bounds
+	b.mem.Data[addr] = val
+}

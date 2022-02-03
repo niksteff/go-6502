@@ -3,27 +3,26 @@ package main
 import (
 	"log"
 
-	cpu6502 "github.com/niksteff/go-6502/pkg/cpu_6502"
+	cpu6502 "github.com/niksteff/go-6502/pkg/cpu6502"
 )
 
 func main() {
-	mem := cpu6502.Mem{}
-	cpu := cpu6502.CPU{}
+	bus := cpu6502.New()
 	
-	cpu.Reset(&mem)
+	// program start
+	bus.Write(0xFFFC, cpu6502.INS_JSR)
+	bus.Write(0xFFFD, 0x0A)
+	bus.Write(0xFFFE, 0x0B)
 	
-	// write a little program in memory
-	mem.Write(0xFFFC, cpu6502.INS_JSR)
-	mem.Write(0xFFFD, 0x0A)
-	mem.Write(0xFFFE, 0x0B)
-	mem.Write(0xFFFF, cpu6502.INS_LDA_IM)
-	mem.Write(0x0, 0xA)
+	bus.Write(0xFFFF, cpu6502.INS_LDA_IM)
+	bus.Write(0x0, 0xA)
 
-	mem.Write(0x0B0A, cpu6502.INS_LDA_IM)
-	mem.Write(0x0B0B, 0x42)
-	mem.Write(0x0B0C, cpu6502.INS_RTS)
+	bus.Write(0x0B0A, cpu6502.INS_LDA_IM)
+	bus.Write(0x0B0B, 0x42)
+	bus.Write(0x0B0C, cpu6502.INS_RTS)
+	// program end
 	
-	cpu.Execute(&mem, 16)
+	bus.Execute(16)
 
 	log.Println("exiting ...")
 }
