@@ -26,7 +26,7 @@ const (
 
 // CPU represents a physical 6502 CPU
 type CPU struct {
-	Bus *Bus  // the address bus
+	bus *Bus  // the address bus
 	PC  word  // program counter
 	A   byte  // accumulator
 	X   byte  // x register
@@ -77,30 +77,20 @@ func (c *CPU) execute(cyc uint32) {
 			// c2 fetch adl
 			var adl byte = c.fetchbyte(&cyc, c.PC)
 			// c3 internal dummy op
-			var _ byte = c.Bus.Read(word(c.S))
+			var _ byte = c.bus.Read(word(c.S))
 			cyc--
-			// c4 push pch to stack
-			// pch -> S
-			var t word = c.PC >> 8
-			var pch byte = byte(t)
-			c.S.Push(&cyc, c.Bus, pch)
-			// c5 push pcl to stack
-			// pcl -> S
-			var pcl byte = byte(c.PC)
-			c.S.Push(&cyc, c.Bus, pcl)
+			// c4, c5 push pc to stack
+			c.S.PushWord(&cyc, c.bus, c.PC)
 			// c6
-			c.PC = word(c.Bus.Read(c.PC))<<8 | word(adl)
+			c.PC = word(c.bus.Read(c.PC))<<8 | word(adl)
 			cyc--
 		case INS_RTS:
 			// c2 internal dummy op
 			var _ byte = c.read(&cyc, c.PC)
 			// c3
 			cyc--
-			// c4 (s) -> pcl
-			var pcl byte = c.S.Pop(&cyc, c.Bus)
-			// c5 (s) -> pch
-			var pch byte = c.S.Pop(&cyc, c.Bus)
-			c.PC = word(pch)<<8 | word(pcl)
+			// c4, c5 pop pc from stack
+			c.PC = c.S.PopWord(&cyc, c.bus)
 			// c6
 			c.PC++
 			cyc--
@@ -126,10 +116,10 @@ func (c *CPU) setStatusFlags_LDA() {
 // pc+=1
 // cycles-=1
 func (c *CPU) fetchbyte(cyc *uint32, addr word) byte {
-	var b byte = c.Bus.Read(addr)
+	var b byte = c.bus.Read(addr)
 	c.PC++
 	*cyc--
-	
+
 	return b
 }
 
@@ -146,7 +136,7 @@ func (c *CPU) add(cyc *uint32, a byte, b byte) byte {
 // read will read a byte from the bus but does not advance the program counter
 // cycles-=1
 func (c *CPU) read(cyc *uint32, addr word) byte {
-	var b byte = c.Bus.Read(addr)
+	var b byte = c.bus.Read(addr)
 	*cyc--
 
 	return b

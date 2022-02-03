@@ -21,7 +21,7 @@ func (s *Stack) PushWord(cyc *uint32, b *Bus, val word) {
 	*s--
 	*cyc--
 
-	b.Write(0x0100|word(*s-1), byte(val))
+	b.Write(0x0100|word(*s), byte(val))
 	*s--
 	*cyc--
 }
@@ -43,8 +43,6 @@ func (s *Stack) Pop(cyc *uint32, b *Bus) byte {
 // second the high byte of the word will be read
 // cycles-=2
 func (s *Stack) PopWord(cyc *uint32, b *Bus) word {
-	// first low byte
-	// second high byte
 	*s++
 	var val word = word(b.Read(0x0100 | word(*s)))
 	*cyc--

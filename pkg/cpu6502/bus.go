@@ -8,7 +8,8 @@ type word uint16
 // microprocessor
 type Bus struct {
 	cpu CPU
-	mem RAM
+	ram RAM
+	rom ROM
 }
 
 // New returns a new instance of the microprocessors bus which can be used to
@@ -17,10 +18,13 @@ func New() Bus {
 	var b Bus
 	b = Bus{
 		cpu: CPU{
-			Bus: &b,
+			bus: &b,
 		},
-		mem: RAM{
-			Data: make([]byte, 1024*64),
+		ram: RAM{
+			data: make([]byte, 1024*64),
+		},
+		rom: ROM{
+			data: make([]byte, 1024*64 ), // TODO: correct the rom size
 		},
 	}
 
@@ -32,12 +36,13 @@ func New() Bus {
 // reset the microprocessor
 func (b *Bus) reset() {
 	// create 64KiB of memory
-	b.mem.Data = make([]byte, 1024*64)
-	
+	b.ram.data = make([]byte, 1024*64)
+
 	// reset the cpu to read the first instruction
 	b.cpu.reset()
 
 	// TODO: call execute with the correct amount of instructions
+	// TODO: use the ROM to load the boot sequence
 }
 
 // Execute the given number of cycles
@@ -48,12 +53,12 @@ func (b *Bus) Execute(cyc uint32) {
 // Read 1 byte from the given address on the bus
 func (b *Bus) Read(addr word) byte {
 	// TODO: create assert to be in memory bounds
-	var d byte = b.mem.Data[addr]
+	var d byte = b.ram.data[addr]
 	return d
 }
 
 // Write 1 byte to the bus at the given address
 func (b *Bus) Write(addr word, val byte) {
 	// TODO: create assert to be in memory bounds
-	b.mem.Data[addr] = val
+	b.ram.data[addr] = val
 }
